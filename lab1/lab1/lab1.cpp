@@ -12,15 +12,86 @@
 
 #include <iostream>
 #include <string.h>
+#include <fstream>
+#include <cstdlib>
+#include <time.h>
 using namespace std;
 const int MAX_SIZE = 200;
 
+int realise_functions()
+{
+    int function_number = 0;
+    printf("Possible functions:\n   Function 1: Input/Output from console to file\n   Function 2: Input array from console\n   Function 3: Input random numbers to array\n   Function 4: Output array to binary file\n");
+    printf("Enter function number you want to use: ");
+    scanf_s("%d", &function_number);
+    system("cls");
+    return function_number;
+}
+
+//Функції введення масивів з консолі та запис масивів в текстовий файл(текстові файли);
+void output_file_for_int(int N, int A[])
+{
+    ofstream MyFile("file.txt");
+
+    for (int i = 0; i < N; i++)
+    {
+        MyFile << A[i] << "   ";
+    }
+
+    MyFile.close();
+}
+void output_file_for_float(int N, float A[])
+{
+    ofstream MyFile("file.txt");
+
+    for (int i = 0; i < N; i++)
+    {
+        MyFile << A[i] << "   ";
+    }
+
+    MyFile.close();
+}
+
+//Функції введення розміру масиву(масивів) з консолі, створення масиву(масивів) з використанням датчика випадкових чисел та 
+//запис масиву(масивів) в бінарний файл(бінарний файли);
+int input_arrays_size()
+{
+    int N;
+    printf("Enter N: ");
+    scanf_s("%d", &N);
+    return N;
+}
+int* random_array_for_int(int N)
+{
+    srand(time(0));
+    int A[MAX_SIZE];
+    for (int i = 0; i < N; i++)
+    {
+        A[i] = rand() % 100;
+    }
+    return A;
+}
+float* random_array_for_float(int N)
+{
+    srand(time(0));
+    float X[MAX_SIZE];
+    for (int i = 0; i < N; i++)
+    {
+        X[i] = rand() % 100;
+    }
+    return X;
+}
+void output_binary_file_for_int()
+{
+
+}
+
 void task1()
 {
+    int function_number = realise_functions();
     //Із одновимірного масиву А розміру N побудувати масив В із всіх додатних елементів.
     int A[MAX_SIZE], N, B[MAX_SIZE], B_index = 0;
-RESIZE1:  printf("Enter N: ");
-    scanf_s("%d", &N);
+RESIZE1:  N = input_arrays_size();
     if (N > 0)
     {
         for (int i = 0; i < N; i++)
@@ -55,6 +126,7 @@ RESIZE1:  printf("Enter N: ");
 
 void task2()
 {
+    int function_number = realise_functions();
     /*>>Зауваження. При розв’язуванні використати змінну(або декілька змінних) типу вказівник,
 яка би вказувала поточний елемент масиву(або на деякий елемент масиву), що
 розглядається (у приклад 5 змінна – вказівник pC вказує на поточний елемент масиву C).
@@ -63,8 +135,7 @@ void task2()
     int A[MAX_SIZE], N, T, max_index = 0, positive_index = 0;
     printf("Enter T: ");
     scanf_s("%d", &T);
-RESIZE2:  printf("Enter N: ");
-    scanf_s("%d", &N);
+RESIZE2:  N = input_arrays_size();
     if (N > 0)
     {
         for (int i = 0; i < N; i++)
@@ -99,6 +170,7 @@ RESIZE2:  printf("Enter N: ");
 
 void task3()
 {
+    int function_number = realise_functions();
     /*Задано дійсні величини a,b (a < b) і масив чисел X (n), n <= 200. 
 Розробити програму, яка обчислює суму всіх X (i) < a , добуток всіх X (i) > b
 і знаходить max X(i) та min X(i) серед X(i)є[a,b], i=1,2,...,n.*/
@@ -114,8 +186,7 @@ AB:  printf("Enter a: ");
     }
 
     int N;
-RESIZE3:  printf("Enter N: ");
-    scanf_s("%d", &N);
+RESIZE3:  N = input_arrays_size();
     if (N > 0)
     {
         float Sum = 0, Mult = 1, max = a, min = b;
@@ -182,9 +253,11 @@ RESIZE3:  printf("Enter N: ");
 
 int main()
 {
+TASK:  printf("Tasks:\n   Task 1: Array of positive numbers\n   Task 2: Index of last max number\n   Task 3: Find stuff in between\n");
     int task_manager = 0;
-TASK:  printf("Enter task number you want to do: ");
+    printf("Enter task number you want to do: ");
     scanf_s("%d", &task_manager);
+    system("cls");
 
     if (task_manager == 1)
     {
@@ -200,7 +273,7 @@ TASK:  printf("Enter task number you want to do: ");
     }
     else
     {
-        printf("Please enter number from 1 to 3!\n");
+        printf("Please enter number from 1 to 3!");
         goto TASK;
     }
 
@@ -209,14 +282,17 @@ FIN:  printf("\nDo you want to do one more task? Enter 'yes' if you do, and 'no'
     cin >> answer;
     if (answer == "yes")
     {
+        system("cls");
         goto TASK;
     }
     if (answer == "no")
     {
+        system("cls");
         printf("Bye!");
     }
     else
     {
+        system("cls");
         printf("Please enter 'yes' or 'no'\n");
         goto FIN;
     }
