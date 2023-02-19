@@ -5,7 +5,7 @@
 1.	Функції введення масивів з консолі та запис масивів в текстовий файл(текстові файли);
 2.	Функції введення розміру масиву(масивів) з консолі, створення масиву(масивів) з використанням датчика випадкових чисел та 
 запис масиву(масивів) в бінарний файл(бінарний файли);
-3.	Функції розв’язання задач згідно варіанту з використанням динамічних масивів. 
+3.	Функції розв’язання задач згідно варіанту з використанням динамічних масивів.
 Вхідні дані зчитаються з файлів, результати записуються в нові файли та виводиться в консоль.
 4.	Функцію читає дані з файлів в контейнер (vector, valarray або array) та з контейнера дані виводиться в консоль.
 */
@@ -15,6 +15,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <time.h>
+#include <vector>
 using namespace std;
 const int MAX_SIZE = 200;
 
@@ -81,9 +82,69 @@ float* random_array_for_float(int N)
     }
     return X;
 }
-void output_binary_file_for_int()
+void output_binary_file_for_int(int N, int A[])
 {
+    ofstream MyFile("binary.dat", ios::out | ios::binary);
+    for (int i = 0; i < N; i++)
+    {
+        MyFile.write((char*)&A[i], sizeof(int));
+    }
+    MyFile.close();
+}
+void output_binary_file_for_float(int N, float A[])
+{
+    ofstream MyFile("binary.dat", ios::out | ios::binary);
+    for (int i = 0; i < N; i++)
+    {
+        MyFile.write((char*)&A[i], sizeof(float));
+    }
+    MyFile.close();
+}
 
+//Функції розв’язання задач згідно варіанту з використанням динамічних масивів.
+//Вхідні дані зчитаються з файлів, результати записуються в нові файли та виводиться в консоль.
+void read_from_file_to_file_to_console()
+{
+    ofstream MyFile;
+    MyFile.open("file.txt", ios::out);
+}
+
+//Функцію читає дані з файлів в контейнер (vector, valarray або array) та з контейнера дані виводиться в консоль.
+vector<int> read_from_file_to_container_to_console_for_int()
+{
+    std::streampos file_size;
+    std::ifstream file("file.txt", std::ios::out);
+
+    file.seekg(0, std::ios::end);
+    file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<int> A(file_size);
+    file.read((char*)&A[0], file_size);
+
+    for (int i = 0; i < A.size(); i++)
+    {
+        printf("A[%d]: %d", i, A[i]);
+    }
+    return A;
+}
+vector<float> read_from_file_to_container_to_console_for_float()
+{
+    std::streampos file_size;
+    std::ifstream file("file.txt", std::ios::out);
+
+    file.seekg(0, std::ios::end);
+    file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<float> X(file_size);
+    file.read((char*)&X[0], file_size);
+
+    for (int i = 0; i < X.size(); i++)
+    {
+        printf("X[%d]: %f", i, X[i]);
+    }
+    return X;
 }
 
 void task1()
