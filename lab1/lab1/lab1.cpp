@@ -11,12 +11,15 @@
 */
 
 #include <iostream>
+#include <cstdio>
+#include <cstdlib>
 #include <string.h>
 #include <fstream>
 #include <cstdlib>
 #include <time.h>
 #include <vector>
 #include <tuple>
+#include <math.h>
 using namespace std;
 const int MAX_SIZE = 200;
 
@@ -299,59 +302,317 @@ void output_binary_file_for_float()
 
 //Функції розв’язання задач згідно варіанту з використанням динамічних масивів.
 //Вхідні дані зчитаються з файлів, результати записуються в нові файли та виводиться в консоль.
-void read_from_file_to_file_to_console()
+void read_from_file_to_file_to_console_for_int(int task_manager)
 {
-    ofstream MyFile;
-    MyFile.open("file.txt", ios::out);
+    char temp_file_data[MAX_SIZE];
+    int temp_index = 0;
+    int A[MAX_SIZE];
+    int A_index = 0;
+    ifstream MyFile;
+    MyFile.open("file.txt");
+    int temp = 0;
+    bool negative_indicator = false;
+
+    while (MyFile.good() && temp_index < 200)
+    {
+        MyFile.get(temp_file_data[temp_index]);
+        temp_index++;
+    }
+    for (int i = 0; i < temp_index; i++)
+    {
+        if (temp_file_data[i] != ' ' && temp_file_data[i] != '-')
+        {
+            temp = temp * 10 + int(temp_file_data[i]);
+        }
+        else if (temp_file_data[i] == '-')
+        {
+            negative_indicator = true;
+        }
+        else
+        {
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
+            {
+                A[A_index] = temp;
+                A_index++;
+                temp = 0;
+            }
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
+            {
+                A[A_index] = -temp;
+                A_index++;
+                temp = 0;
+                negative_indicator = false;
+            }
+        }
+    }
+
+    for (int i = 0; i < A_index; i++)
+    {
+        if (A[i] >= 0)
+        {
+            A[i] -= 48;
+            printf("A[%d]: %d\n", i, A[i]);
+        }
+        else
+        {
+            A[i] += 48;
+            printf("A[%d]: %d\n", i, A[i]);
+        }
+    }
+
+    if (task_manager == 1)
+    {
+        task1(A_index, A);
+    }
+    else
+    {
+        task2(A_index, A);
+    }
+}
+void read_from_file_to_file_to_console_for_float()
+{
+    char temp_file_data[MAX_SIZE];
+    int temp_index = 0;
+    float X[MAX_SIZE];
+    int X_index = 0;
+    ifstream MyFile;
+    MyFile.open("file.txt");
+    float temp = 0;
+    bool negative_indicator = false;
+    bool point_indicator = false;
+    int number_power = -1;
+
+    while (MyFile.good() && temp_index < 200)
+    {
+        MyFile.get(temp_file_data[temp_index]);
+        temp_index++;
+    }
+    for (int i = 0; i < temp_index; i++)
+    {
+        if (temp_file_data[i] != ' ' && temp_file_data[i] != '-' && temp_file_data[i] != '.')
+        {
+            if (point_indicator = false)
+            {
+                temp = temp * 10 + float(temp_file_data[i]);
+            }
+            else
+            {
+                temp += pow(10, number_power--) * float(temp_file_data[i]);
+            }
+        }
+        else if (temp_file_data[i] == '.')
+        {
+            point_indicator = true;
+        }
+        else if (temp_file_data[i] == '-')
+        {
+            negative_indicator = true;
+        }
+        else
+        {
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
+            {
+                X[X_index] = temp;
+            }
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
+            {
+                X[X_index] = -temp;
+                negative_indicator = false;
+            }
+            X_index++;
+            temp = 0;
+            point_indicator = false;
+            number_power = -1;
+        }
+    }
+
+    for (int i = 0; i < X_index; i++)
+    {
+        X[i] *= 10;
+        if (i % 3 == 0)
+        {
+            if (X[i] >= 0)
+            {
+                X[i] -= 48;
+            }
+            else
+            {
+                X[i] += 48;
+            }
+        }
+    }
+
+    for (int i = 0; i < X_index / 3; i++)
+    {
+        printf("X[%d]: %0.3f\n", i, X[i]);
+    }
 }
 
 //Функцію читає дані з файлів в контейнер (vector, valarray або array) та з контейнера дані виводиться в консоль.
 void read_from_file_to_container_to_console_for_int(int task_manager)
 {
-    std::streampos file_size;
-    std::ifstream file("file.txt", std::ios::out);
+    char temp_file_data[MAX_SIZE];
+    int temp_index = 0;
+    int A[MAX_SIZE];
+    int A_index = 0;
+    vector<int> A_vector;
+    ifstream MyFile;
+    MyFile.open("file.txt");
+    int temp = 0;
+    bool negative_indicator = false;
 
-    file.seekg(0, std::ios::end);
-    file_size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    std::vector<int> A(file_size);
-    file.read((char*)&A[0], file_size);
-
-    for (int i = 0; i < A.size(); i++)
+    while (MyFile.good() && temp_index < 200)
     {
-        printf("A[%d]: %d\n", i, A[i]);
+        MyFile.get(temp_file_data[temp_index]);
+        temp_index++;
+    }
+    for (int i = 0; i < temp_index; i++)
+    {
+        if (temp_file_data[i] != ' ' && temp_file_data[i] != '-')
+        {
+            temp = temp * 10 + int(temp_file_data[i]);
+        }
+        else if (temp_file_data[i] == '-')
+        {
+            negative_indicator = true;
+        }
+        else
+        {
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
+            {
+                A[A_index] = temp;
+                A_index++;
+                temp = 0;
+            }
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
+            {
+                A[A_index] = -temp;
+                A_index++;
+                temp = 0;
+                negative_indicator = false;
+            }
+        }
     }
 
-    int* B = &A[0];
+    for (int i = 0; i < A_index; i++)
+    {
+        if (A[i] >= 0)
+        {
+            A[i] -= 48;
+            printf("A[%d]: %d\n", i, A[i]);
+        }
+        else
+        {
+            A[i] += 48;
+            printf("A[%d]: %d\n", i, A[i]);
+        }
+    }
+
     if (task_manager == 1)
     {
-        task1(A.size(), B);
+        task1(A_index, A);
     }
     else
     {
-        task2(A.size(), B);
+        task2(A_index, A);
     }
 }
 void read_from_file_to_container_to_console_for_float()
 {
-    std::streampos file_size;
-    std::ifstream file("file.txt", std::ios::out);
+    char temp_file_data[MAX_SIZE];
+    int temp_index = 0;
+    float X[MAX_SIZE];
+    int X_index = 0;
+    vector<float> X_vector;
+    ifstream MyFile;
+    MyFile.open("file.txt");
+    float temp = 0;
+    bool negative_indicator = false;
+    bool point_indicator = false;
+    int number_power = -1;
 
-    file.seekg(0, std::ios::end);
-    file_size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    std::vector<float> X(file_size);
-    file.read((char*)&X[0], file_size);
-
-    for (int i = 0; i < X.size(); i++)
+    while (MyFile.good() && temp_index < 200)
     {
-        printf("X[%d]: %f\n]", i, X[i]);
+        MyFile.get(temp_file_data[temp_index]);
+        temp_index++;
+    }
+    for (int i = 0; i < temp_index; i++)
+    {
+        if (temp_file_data[i] != ' ' && temp_file_data[i] != '-' && temp_file_data[i] != '.')
+        {
+            if (point_indicator = false)
+            {
+                temp = temp * 10 + float(temp_file_data[i]);
+            }
+            else
+            {
+                temp += pow(10, number_power--) * float(temp_file_data[i]);
+            }
+        }
+        else if (temp_file_data[i] == '.')
+        {
+            point_indicator = true;
+        }
+        else if (temp_file_data[i] == '-')
+        {
+            negative_indicator = true;
+        }
+        else
+        {
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
+            {
+                X[X_index] = temp;
+            }
+            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
+            {
+                X[X_index] = -temp;
+                negative_indicator = false;
+            }
+            X_index++;
+            temp = 0;
+            point_indicator = false;
+            number_power = -1;
+        }
     }
 
-    float* Y = &X[0];
-    task3(X.size(), Y);
+    for (int i = 0; i < X_index; i++)
+    {
+        X[i] *= 10;
+        if (i % 3 == 0)
+        {
+            if (X[i] >= 0)
+            {
+                X[i] -= 48;
+            }
+            else
+            {
+                X[i] += 48;
+            }
+            X_vector.push_back(X[i]);
+        }
+    }
+
+    for (int i = 0; i < X_index / 3; i++)
+    {
+        printf("X[%d]: %0.3f\n", i, X_vector[i]);
+    }
+    /*for (int i = 0; i < X_index; i++)
+    {
+        if (i % 3 == 0)
+        {
+            X[i] *= 10;
+            if (X[i] >= 0)
+            {
+                X[i] -= 48;
+                printf("X[%d]: %0.3f\n", i / 3, X[i]);
+            }
+            else
+            {
+                X[i] += 48;
+                printf("X[%d]: %0.3f\n", i / 3, X[i]);
+            }
+        }
+    }*/
 }
 
 int main()
@@ -379,7 +640,7 @@ FUNK:  int function_manager = realise_functions();
             output_binary_file_for_float();
             break;
         case 3:
-            read_from_file_to_file_to_console();
+            read_from_file_to_file_to_console_for_float();
             break;
         case 4:
             read_from_file_to_container_to_console_for_float();
@@ -399,7 +660,7 @@ FUNK:  int function_manager = realise_functions();
             output_binary_file_for_int(task_manager);
             break;
         case 3:
-            read_from_file_to_file_to_console();
+            read_from_file_to_file_to_console_for_int(task_manager);
             break;
         case 4:
             read_from_file_to_container_to_console_for_int(task_manager);
