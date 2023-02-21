@@ -142,7 +142,7 @@ AB:  printf("Enter a: ");
     }
     else
     {
-        printf("There is no number bigger than b");
+        printf("There is no number bigger than b\n");
     }
     if (MinMax_flag == true)
     {
@@ -151,7 +151,7 @@ AB:  printf("Enter a: ");
     }
     else
     {
-        printf("There is no number between a and b");
+        printf("There is no number between a and b\n");
     }
 }
 
@@ -368,6 +368,15 @@ void read_from_file_to_file_to_console_for_int(int task_manager)
     {
         task2(A_index, A);
     }
+
+    ofstream NewFile("newfile.txt");
+
+    for (int i = 0; i < A_index; i++)
+    {
+        NewFile << A[i] << "   ";
+    }
+
+    MyFile.close();
 }
 void read_from_file_to_file_to_console_for_float()
 {
@@ -380,7 +389,7 @@ void read_from_file_to_file_to_console_for_float()
     float temp = 0;
     bool negative_indicator = false;
     bool point_indicator = false;
-    int number_power = -1;
+    int number_power = 0;
 
     while (MyFile.good() && temp_index < 200)
     {
@@ -422,7 +431,7 @@ void read_from_file_to_file_to_console_for_float()
             X_index++;
             temp = 0;
             point_indicator = false;
-            number_power = -1;
+            number_power = 0;
         }
     }
 
@@ -441,10 +450,38 @@ void read_from_file_to_file_to_console_for_float()
             }
         }
     }
-
-    for (int i = 0; i < X_index / 3; i++)
+    float X_new[MAX_SIZE];
+    int X_new_index = 0;
+    for (int i = 0; i < X_index; i++)
     {
-        printf("X[%d]: %0.3f\n", i, X[i]);
+        if (i % 3 == 0)
+        {
+            if (X[i] > 0)
+            {
+                X_new[X_new_index++] = X[i] - 4.8;
+            }
+            else if (X[i] == 0)
+            {
+                X_new[X_new_index++] = 0;
+            }
+            else
+            {
+                X_new[X_new_index++] = X[i] + 4.8;
+            }
+        }
+    }
+
+    for (int i = 0; i < X_new_index; i++)
+    {
+        printf("X[%d]: %0.3f\n", i, X_new[i]);
+    }
+
+    task3(X_new_index, X_new);
+    ofstream NewFile("newfile.txt");
+
+    for (int i = 0; i < X_new_index; i++)
+    {
+        NewFile << X_new[i] << "   ";
     }
 }
 
@@ -480,12 +517,14 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
         {
             if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
             {
+                A_vector.push_back(temp);
                 A[A_index] = temp;
                 A_index++;
                 temp = 0;
             }
             if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
             {
+                A_vector.push_back(-temp);
                 A[A_index] = -temp;
                 A_index++;
                 temp = 0;
@@ -496,15 +535,17 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
 
     for (int i = 0; i < A_index; i++)
     {
-        if (A[i] >= 0)
+        if (A_vector.at(i) >= 0)
         {
+            A_vector.at(i) -= 48;
             A[i] -= 48;
-            printf("A[%d]: %d\n", i, A[i]);
+            printf("A[%d]: %d\n", i, A_vector[i]);
         }
         else
         {
+            A_vector.at(i) += 48;
             A[i] += 48;
-            printf("A[%d]: %d\n", i, A[i]);
+            printf("A[%d]: %d\n", i, A_vector[i]);
         }
     }
 
@@ -561,10 +602,12 @@ void read_from_file_to_container_to_console_for_float()
         {
             if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
             {
+                X_vector.push_back(temp);
                 X[X_index] = temp;
             }
             if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
             {
+                X_vector.push_back(-temp);
                 X[X_index] = -temp;
                 negative_indicator = false;
             }
@@ -577,42 +620,41 @@ void read_from_file_to_container_to_console_for_float()
 
     for (int i = 0; i < X_index; i++)
     {
+        X_vector.at(i) *= 10;
         X[i] *= 10;
         if (i % 3 == 0)
         {
-            if (X[i] >= 0)
+            if (X_vector.at(i) >= 0)
             {
                 X[i] -= 48;
+                X_vector.at(i) -= 48;
             }
             else
             {
                 X[i] += 48;
+                X_vector.at(i) += 48;
             }
-            X_vector.push_back(X[i]);
         }
     }
-
-    for (int i = 0; i < X_index / 3; i++)
-    {
-        printf("X[%d]: %0.3f\n", i, X_vector[i]);
-    }
-    /*for (int i = 0; i < X_index; i++)
+    float X_new[MAX_SIZE];
+    int X_new_index = 0;
+    for (int i = 0; i < X_index; i++)
     {
         if (i % 3 == 0)
         {
-            X[i] *= 10;
-            if (X[i] >= 0)
-            {
-                X[i] -= 48;
-                printf("X[%d]: %0.3f\n", i / 3, X[i]);
-            }
-            else
-            {
-                X[i] += 48;
-                printf("X[%d]: %0.3f\n", i / 3, X[i]);
-            }
+            X_new[X_new_index++] = X[i];
         }
-    }*/
+    }
+
+    for (int i = 0; i < X_index; i++)
+    {
+        if (i % 3 == 0)
+        {
+            printf("X[%d]: %0.3f\n", i, X_vector.at(i));
+        }
+    }
+
+    task3(X_new_index, X_new);
 }
 
 int main()
