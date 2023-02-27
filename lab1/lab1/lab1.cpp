@@ -214,7 +214,7 @@ RESIZE:  int N;
 
     MyFile.close();
 }
-void output_file_for_float()
+void output_file_for_double()
 {
 RESIZE:  int N;
     printf("Enter N: ");
@@ -265,7 +265,7 @@ int* random_array_for_int(int N)
     }
     return A;
 }
-double* random_array_for_float(int N)
+double* random_array_for_double(int N)
 {
     srand(time(0));
     double X[MAX_SIZE];
@@ -299,10 +299,10 @@ void output_binary_file_for_int(int task_manager)
     }
     MyFile.close();
 }
-void output_binary_file_for_float()
+void output_binary_file_for_double()
 {
     int N = input_arrays_size();
-    double* X = random_array_for_float(N);
+    double* X = random_array_for_double(N);
     task3(N, X);
     ofstream MyFile("binary.dat", ios::out | ios::binary);
     for (int i = 0; i < N; i++)
@@ -322,6 +322,8 @@ void read_from_file_to_file_to_console_for_int(int task_manager)
     int A_index = 0;
     ifstream MyFile;
     MyFile.open("file.txt");
+    if (!MyFile.is_open()) return;
+    if (MyFile.fail()) return;
     int temp = 0;
     bool negative_indicator = false;
 
@@ -379,11 +381,13 @@ void read_from_file_to_file_to_console_for_int(int task_manager)
     }
     NewFile.close();
 }
-void read_from_file_to_file_to_console_for_float()
+void read_from_file_to_file_to_console_for_double()
 {
     int N;
     double* pX = new double[MAX_SIZE];
     ifstream MyFile("doublefile.txt");
+    if (!MyFile.is_open()) return;
+    if (MyFile.fail()) return;
     MyFile >> N;
     double d;
     for (int i = 0; i < N; i++)
@@ -413,6 +417,8 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
     vector<int> A_vector;
     ifstream MyFile;
     MyFile.open("file.txt");
+    if (!MyFile.is_open()) return;
+    if (MyFile.fail()) return;
     int temp = 0;
     bool negative_indicator = false;
     while (MyFile.good() && temp_index < 200)
@@ -463,11 +469,12 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
         task2(A_index, A);
     }
 }
-void read_from_file_to_container_to_console_for_float()
+void read_from_file_to_container_to_console_for_double()
 {
     vector<double> X_vector;
     double X[MAX_SIZE];
     ifstream MyFile("doublefile.txt");
+    if (!MyFile.is_open()) return;
     if (MyFile.fail()) return;
     int N;
     double d;
@@ -502,16 +509,16 @@ FUNK:  int function_manager = realise_functions();
         switch (function_manager)
         {
         case 1:
-            output_file_for_float();
+            output_file_for_double();
             break;
         case 2:
-            output_binary_file_for_float();
+            output_binary_file_for_double();
             break;
         case 3:
-            read_from_file_to_file_to_console_for_float();
+            read_from_file_to_file_to_console_for_double();
             break;
         case 4:
-            read_from_file_to_container_to_console_for_float();
+            read_from_file_to_container_to_console_for_double();
             break;
         default:
             break;
