@@ -23,9 +23,10 @@
 using namespace std;
 const int MAX_SIZE = 200;
 
+//Завдання 1
+//Із одновимірного масиву А розміру N побудувати масив В із всіх додатних елементів.
 void task1(int N, int A[])
 {
-    //Із одновимірного масиву А розміру N побудувати масив В із всіх додатних елементів.
     int B[MAX_SIZE], B_index = 0;
     for (int i = 0; i < N; i++)
     {
@@ -49,13 +50,14 @@ void task1(int N, int A[])
     }
 }
 
-void task2(int N, int A[])
-{
-    /*>>Зауваження. При розв’язуванні використати змінну(або декілька змінних) типу вказівник,
+//Завдання 2
+/*>>Зауваження. При розв’язуванні використати змінну(або декілька змінних) типу вказівник,
 яка би вказувала поточний елемент масиву(або на деякий елемент масиву), що
 розглядається (у приклад 5 змінна – вказівник pC вказує на поточний елемент масиву C).
 Заданий одномірний масив цілих чисел А розміру N.
    Знайти номер останнього максимального елемента серед додатних елементів, починаючи з першого елемента, більшого заданого числа Т.*/
+void task2(int N, int A[])
+{
     int T, max_index = 0, positive_index = 0;
     printf("Enter T: ");
     scanf_s("%d", &T);
@@ -84,11 +86,12 @@ void task2(int N, int A[])
     }
 }
 
-void task3(int N, float X[])
-{
-    /*Задано дійсні величини a,b (a < b) і масив чисел X (n), n <= 200.
+//Завдання 3
+/*Задано дійсні величини a,b (a < b) і масив чисел X (n), n <= 200.
 Розробити програму, яка обчислює суму всіх X (i) < a , добуток всіх X (i) > b
 і знаходить max X(i) та min X(i) серед X(i)є[a,b], i=1,2,...,n.*/
+void task3(int N, double X[])
+{
     float a, b;
 AB:  printf("Enter a: ");
     scanf_s("%f", &a);
@@ -155,6 +158,7 @@ AB:  printf("Enter a: ");
     }
 }
 
+//Меню
 int realise_functions()
 {
     int function_number = 0;
@@ -220,20 +224,20 @@ RESIZE:  int N;
         printf("Please enter N > 0!\n");
         goto RESIZE;
     }
-    float X[MAX_SIZE];
+    double X[MAX_SIZE];
     for (int i = 0; i < N; i++)
     {
         printf("Enter X[%d]: ", i);
-        scanf_s("%f", &X[i]);
+        scanf_s("%lf", &X[i]);
     }
     task3(N, X);
-    ofstream MyFile("file.txt");
 
+    ofstream MyFile("doublefile.txt");
+    MyFile << N << endl;
     for (int i = 0; i < N; i++)
     {
         MyFile << X[i] << "   ";
     }
-
     MyFile.close();
 }
 
@@ -252,19 +256,27 @@ int* random_array_for_int(int N)
     int A[MAX_SIZE];
     for (int i = 0; i < N; i++)
     {
-        A[i] = rand() % 100;
+        A[i] = rand();
+        if (rand() % 2 == 1)
+        {
+            A[i] = -A[i];
+        }
         printf("A[%d]: %d\n", i, A[i]);
     }
     return A;
 }
-float* random_array_for_float(int N)
+double* random_array_for_float(int N)
 {
     srand(time(0));
-    float X[MAX_SIZE];
+    double X[MAX_SIZE];
     for (int i = 0; i < N; i++)
     {
-        X[i] = rand() % 100;
-        printf("A[%d]: %f\n", i, X[i]);
+        X[i] = 100 * rand() / (1.0 + rand());
+        if (rand() % 2 == 1)
+        {
+            X[i] = -X[i];
+        }
+        printf("A[%d]: %lf\n", i, X[i]);
     }
     return X;
 }
@@ -290,12 +302,12 @@ void output_binary_file_for_int(int task_manager)
 void output_binary_file_for_float()
 {
     int N = input_arrays_size();
-    float* X = random_array_for_float(N);
+    double* X = random_array_for_float(N);
     task3(N, X);
     ofstream MyFile("binary.dat", ios::out | ios::binary);
     for (int i = 0; i < N; i++)
     {
-        MyFile.write((char*)&X[i], sizeof(float));
+        MyFile.write((char*)&X[i], sizeof(double));
     }
     MyFile.close();
 }
@@ -306,7 +318,7 @@ void read_from_file_to_file_to_console_for_int(int task_manager)
 {
     char temp_file_data[MAX_SIZE];
     int temp_index = 0;
-    int A[MAX_SIZE];
+    int* pA = new int[MAX_SIZE];
     int A_index = 0;
     ifstream MyFile;
     MyFile.open("file.txt");
@@ -322,7 +334,7 @@ void read_from_file_to_file_to_console_for_int(int task_manager)
     {
         if (temp_file_data[i] != ' ' && temp_file_data[i] != '-')
         {
-            temp = temp * 10 + int(temp_file_data[i]);
+            temp = temp * 10 + int(temp_file_data[i]) - 48;
         }
         else if (temp_file_data[i] == '-')
         {
@@ -332,13 +344,13 @@ void read_from_file_to_file_to_console_for_int(int task_manager)
         {
             if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
             {
-                A[A_index] = temp;
+                pA[A_index] = temp;
                 A_index++;
                 temp = 0;
             }
             if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
             {
-                A[A_index] = -temp;
+                pA[A_index] = -temp;
                 A_index++;
                 temp = 0;
                 negative_indicator = false;
@@ -348,141 +360,47 @@ void read_from_file_to_file_to_console_for_int(int task_manager)
 
     for (int i = 0; i < A_index; i++)
     {
-        if (A[i] >= 0)
-        {
-            A[i] -= 48;
-            printf("A[%d]: %d\n", i, A[i]);
-        }
-        else
-        {
-            A[i] += 48;
-            printf("A[%d]: %d\n", i, A[i]);
-        }
+        printf("A[%d]: %d\n", i, pA[i]);
     }
-
     if (task_manager == 1)
     {
-        task1(A_index, A);
+        task1(A_index, pA);
     }
     else
     {
-        task2(A_index, A);
+        task2(A_index, pA);
     }
+    MyFile.close();
 
     ofstream NewFile("newfile.txt");
-
     for (int i = 0; i < A_index; i++)
     {
-        NewFile << A[i] << "   ";
+        NewFile << pA[i] << "   ";
     }
-
-    MyFile.close();
+    NewFile.close();
 }
 void read_from_file_to_file_to_console_for_float()
 {
-    char temp_file_data[MAX_SIZE];
-    int temp_index = 0;
-    float X[MAX_SIZE];
-    int X_index = 0;
-    ifstream MyFile;
-    MyFile.open("file.txt");
-    float temp = 0;
-    bool negative_indicator = false;
-    bool point_indicator = false;
-    int number_power = 0;
+    int N;
+    double* pX = new double[MAX_SIZE];
+    ifstream MyFile("doublefile.txt");
+    MyFile >> N;
+    double d;
+    for (int i = 0; i < N; i++)
+    {
+        MyFile >> d;
+        pX[i] = d;
+        printf("X[%d]: %0.3lf\n", i, pX[i]);
+    }
+    task3(N, pX);
+    MyFile.close();
 
-    while (MyFile.good() && temp_index < 200)
+    ofstream NewFile("newdoublefile.txt");
+    for (int i = 0; i < N; i++)
     {
-        MyFile.get(temp_file_data[temp_index]);
-        temp_index++;
+        NewFile << pX[i] << "   ";
     }
-    for (int i = 0; i < temp_index; i++)
-    {
-        if (temp_file_data[i] != ' ' && temp_file_data[i] != '-' && temp_file_data[i] != '.')
-        {
-            if (point_indicator = false)
-            {
-                temp = temp * 10 + float(temp_file_data[i]);
-            }
-            else
-            {
-                temp += pow(10, number_power--) * float(temp_file_data[i]);
-            }
-        }
-        else if (temp_file_data[i] == '.')
-        {
-            point_indicator = true;
-        }
-        else if (temp_file_data[i] == '-')
-        {
-            negative_indicator = true;
-        }
-        else
-        {
-            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
-            {
-                X[X_index] = temp;
-            }
-            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
-            {
-                X[X_index] = -temp;
-                negative_indicator = false;
-            }
-            X_index++;
-            temp = 0;
-            point_indicator = false;
-            number_power = 0;
-        }
-    }
-
-    for (int i = 0; i < X_index; i++)
-    {
-        X[i] *= 10;
-        if (i % 3 == 0)
-        {
-            if (X[i] >= 0)
-            {
-                X[i] -= 48;
-            }
-            else
-            {
-                X[i] += 48;
-            }
-        }
-    }
-    float X_new[MAX_SIZE];
-    int X_new_index = 0;
-    for (int i = 0; i < X_index; i++)
-    {
-        if (i % 3 == 0)
-        {
-            if (X[i] > 0)
-            {
-                X_new[X_new_index++] = X[i] - 4.8;
-            }
-            else if (X[i] == 0)
-            {
-                X_new[X_new_index++] = 0;
-            }
-            else
-            {
-                X_new[X_new_index++] = X[i] + 4.8;
-            }
-        }
-    }
-
-    for (int i = 0; i < X_new_index; i++)
-    {
-        printf("X[%d]: %0.3f\n", i, X_new[i]);
-    }
-
-    task3(X_new_index, X_new);
-    ofstream NewFile("newfile.txt");
-
-    for (int i = 0; i < X_new_index; i++)
-    {
-        NewFile << X_new[i] << "   ";
-    }
+    NewFile.close();
 }
 
 //Функцію читає дані з файлів в контейнер (vector, valarray або array) та з контейнера дані виводиться в консоль.
@@ -497,7 +415,6 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
     MyFile.open("file.txt");
     int temp = 0;
     bool negative_indicator = false;
-
     while (MyFile.good() && temp_index < 200)
     {
         MyFile.get(temp_file_data[temp_index]);
@@ -507,7 +424,7 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
     {
         if (temp_file_data[i] != ' ' && temp_file_data[i] != '-')
         {
-            temp = temp * 10 + int(temp_file_data[i]);
+            temp = temp * 10 + int(temp_file_data[i]) - 48;
         }
         else if (temp_file_data[i] == '-')
         {
@@ -528,25 +445,13 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
                 A[A_index] = -temp;
                 A_index++;
                 temp = 0;
-                negative_indicator = false;
             }
         }
     }
 
     for (int i = 0; i < A_index; i++)
     {
-        if (A_vector.at(i) >= 0)
-        {
-            A_vector.at(i) -= 48;
-            A[i] -= 48;
-            printf("A[%d]: %d\n", i, A_vector[i]);
-        }
-        else
-        {
-            A_vector.at(i) += 48;
-            A[i] += 48;
-            printf("A[%d]: %d\n", i, A_vector[i]);
-        }
+        printf("A[%d]: %d\n", i, A_vector[i]);
     }
 
     if (task_manager == 1)
@@ -560,101 +465,22 @@ void read_from_file_to_container_to_console_for_int(int task_manager)
 }
 void read_from_file_to_container_to_console_for_float()
 {
-    char temp_file_data[MAX_SIZE];
-    int temp_index = 0;
-    float X[MAX_SIZE];
-    int X_index = 0;
-    vector<float> X_vector;
-    ifstream MyFile;
-    MyFile.open("file.txt");
-    float temp = 0;
-    bool negative_indicator = false;
-    bool point_indicator = false;
-    int number_power = -1;
-
-    while (MyFile.good() && temp_index < 200)
+    vector<double> X_vector;
+    double X[MAX_SIZE];
+    ifstream MyFile("doublefile.txt");
+    if (MyFile.fail()) return;
+    int N;
+    double d;
+    MyFile >> N;
+    for (int i = 0; i < N; i++)
     {
-        MyFile.get(temp_file_data[temp_index]);
-        temp_index++;
+        MyFile >> d;
+        X_vector.push_back(d);
+        X[i] = d;
+        printf("X[%d]: %0.3lf\n", i, X_vector[i]);
     }
-    for (int i = 0; i < temp_index; i++)
-    {
-        if (temp_file_data[i] != ' ' && temp_file_data[i] != '-' && temp_file_data[i] != '.')
-        {
-            if (point_indicator = false)
-            {
-                temp = temp * 10 + float(temp_file_data[i]);
-            }
-            else
-            {
-                temp += pow(10, number_power--) * float(temp_file_data[i]);
-            }
-        }
-        else if (temp_file_data[i] == '.')
-        {
-            point_indicator = true;
-        }
-        else if (temp_file_data[i] == '-')
-        {
-            negative_indicator = true;
-        }
-        else
-        {
-            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == false)
-            {
-                X_vector.push_back(temp);
-                X[X_index] = temp;
-            }
-            if (temp_file_data[i + 1] == ' ' && temp_file_data[i + 2] == ' ' && negative_indicator == true)
-            {
-                X_vector.push_back(-temp);
-                X[X_index] = -temp;
-                negative_indicator = false;
-            }
-            X_index++;
-            temp = 0;
-            point_indicator = false;
-            number_power = -1;
-        }
-    }
-
-    for (int i = 0; i < X_index; i++)
-    {
-        X_vector.at(i) *= 10;
-        X[i] *= 10;
-        if (i % 3 == 0)
-        {
-            if (X_vector.at(i) >= 0)
-            {
-                X[i] -= 48;
-                X_vector.at(i) -= 48;
-            }
-            else
-            {
-                X[i] += 48;
-                X_vector.at(i) += 48;
-            }
-        }
-    }
-    float X_new[MAX_SIZE];
-    int X_new_index = 0;
-    for (int i = 0; i < X_index; i++)
-    {
-        if (i % 3 == 0)
-        {
-            X_new[X_new_index++] = X[i];
-        }
-    }
-
-    for (int i = 0; i < X_index; i++)
-    {
-        if (i % 3 == 0)
-        {
-            printf("X[%d]: %0.3f\n", i, X_vector.at(i));
-        }
-    }
-
-    task3(X_new_index, X_new);
+    task3(N, X);
+    MyFile.close();
 }
 
 int main()
