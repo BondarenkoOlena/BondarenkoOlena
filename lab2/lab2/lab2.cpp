@@ -5,7 +5,10 @@
 #include <string.h>
 #include <fstream>
 #include <clocale>
+#include <stdio.h>
+#include <stdlib.h>
 #include <bitset>
+#include <fstream>
 using namespace std;
 #define MAXSIZE 200
 
@@ -57,11 +60,17 @@ void task1()
 у бітах 7-14 ASCII - код символу (8 біт),
 15 біт - біт парності (1 біт).
 */
-void task2()
+/*
+Перша програма - введення інформації та шифрування за вказаним алгоритмом у варіанті. 
+Шифрування здійснювати з використанням побітових операцій. Результат записується у бінарний файл.
+*/
+void task2_1()
 {
+	system("cls");
 	char text[4][32];
 	char c[MAXSIZE];
 	unsigned short result[4][32];
+	unsigned short r, w, b, t;
 	printf("Enter your text:\n");
 	for (int i = 0; i < 4; i++)
 	{
@@ -76,7 +85,6 @@ void task2()
 		}
 	}
 
-	unsigned short r, w, b, t;
 	for (unsigned short i = 0; i < 4; i++)
 	{
 		for (unsigned short j = 0; j < 32; j++)
@@ -109,10 +117,63 @@ void task2()
 	{
 		for (int j = 0; j < 32; j++)
 		{
-			std::bitset<16> x(result[i][j]);
-			cout << x << endl;
+			std::bitset<16> res(result[i][j]);
+			cout << res << endl;
 		}
 	}
+
+	ofstream MyFile("binary.dat", ios::out | ios::binary);
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			MyFile.write((const char*)&result[i][j], sizeof(unsigned short));
+		}
+	}
+	MyFile.close();
+}
+/*
+Друга програма – читає із файлу зашифровану інформацію, розшифровує та виводить у вікно консолі та інший файл.
+*/
+void task2_2()
+{
+	unsigned short c[128];
+	unsigned short r, w;
+	short indi, indj;
+	char result[4][32];
+	char ch;
+
+	ifstream MyFile("binary.dat", ios::out | ios::binary);
+	MyFile.read((char*)c, 128 * sizeof(unsigned short));
+	for (unsigned short i = 0; i < 64; i++)
+	{
+		r = c[i];
+		indj = r & 0x007c;
+		indj >>= 2; // 0000 0000 0111 1100 = 0x007с
+		indi = r & 0x0003; // 0000 0000 0000 0011 = 0x0003
+		w = r & 0x7f80; // 0111 1111 1000 0000 = 0x7f80
+		w >>= 7;
+		ch = w;
+		result[indi][indj] = ch;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			cout << result[i][j] << endl;
+		}
+	}
+
+	ofstream NewFile("newbinary.dat", ios::out | ios::binary);
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			NewFile.write((const char*)&result[i][j], sizeof(char));
+		}
+	}
+	NewFile.close();
 }
 
 //Завдання 3
@@ -142,7 +203,8 @@ TASK:	int task_number = task_manager();
 		task1();
 		break;
 	case 2:
-		task2();
+		task2_1();
+		task2_2();
 		break;
 	case 3:
 		task3();
