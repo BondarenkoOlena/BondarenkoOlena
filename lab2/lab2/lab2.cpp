@@ -10,7 +10,7 @@
 #include <bitset>
 #include <fstream>
 using namespace std;
-#define MAXSIZE 200
+#define MAXSIZE 128
 
 //Меню:
 int task_manager()
@@ -74,15 +74,14 @@ void task2_1()
 	printf("Enter your text:\n");
 	for (int i = 0; i < 4; i++)
 	{
-		cin >> c;
-		for (int j = 0; j < 32; j++)
+		cin >> text[i];
+		int n = strlen(text[i]);
+		while (n < 31)
 		{
-			if (c[j] == NULL)
-			{
-				c[j] = ' ';
-			}
-			text[i][j] = c[j];			
+			strcat_s(text[i], " ");
+			n++;
 		}
+		text[i][31] = '\0';
 	}
 
 	for (unsigned short i = 0; i < 4; i++)
@@ -100,7 +99,7 @@ void task2_1()
 			{
 				if (r & t)
 				{
-					b = 1;
+					b = ~b;
 				}
 				t <<= 1;
 			}
@@ -137,7 +136,7 @@ void task2_1()
 */
 void task2_2()
 {
-	unsigned short c[128];
+	unsigned short c[MAXSIZE];
 	unsigned short r, w;
 	short indi, indj;
 	char result[4][32];
@@ -145,24 +144,28 @@ void task2_2()
 
 	ifstream MyFile("binary.dat", ios::out | ios::binary);
 	MyFile.read((char*)c, 128 * sizeof(unsigned short));
-	for (unsigned short i = 0; i < 64; i++)
+	for (unsigned short i = 0; i < 4; i++)
 	{
-		r = c[i];
-		indj = r & 0x007c;
-		indj >>= 2; // 0000 0000 0111 1100 = 0x007с
-		indi = r & 0x0003; // 0000 0000 0000 0011 = 0x0003
-		w = r & 0x7f80; // 0111 1111 1000 0000 = 0x7f80
-		w >>= 7;
-		ch = w;
-		result[indi][indj] = ch;
+		for (int j = 0; j < 32; j++)
+		{
+			r = c[i * 32 + j];
+			indj = r & 0x007c;
+			indj >>= 2; // 0000 0000 0111 1100 = 0x007с
+			indi = r & 0x0003; // 0000 0000 0000 0011 = 0x0003
+			w = r & 0x7f80; // 0111 1111 1000 0000 = 0x7f80
+			w >>= 7;
+			ch = w;
+			result[indi][indj] = ch;
+		}		
 	}
 
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 32; j++)
 		{
-			cout << result[i][j] << endl;
+			cout << result[i][j];
 		}
+		cout << endl;
 	}
 
 	ofstream NewFile("newbinary.dat", ios::out | ios::binary);
@@ -180,18 +183,146 @@ void task2_2()
 //Реалізувати завдання 2 з використанням структур з бітовими полями та об’єднаннями.
 void task3()
 {
+	system("cls");
+	struct Code_Uncode
+	{
+		unsigned short r: 16;
+		unsigned short w: 16;
+		unsigned short b: 8;
+		unsigned short t: 8;
+	};
+	Code_Uncode task_code;
+	char text[4][32];
+	unsigned short result[4][32];
+	short indi, indj;
+	char result_char[4][32];
+	char ch;
 
+	printf("Enter your text:\n");
+	for (int i = 0; i < 4; i++)
+	{
+		cin >> text[i];
+		int n = strlen(text[i]);
+		while (n < 31)
+		{
+			strcat_s(text[i], " ");
+			n++;
+		}
+		text[i][31] = '\0';
+	}
+
+	for (unsigned short i = 0; i < 4; i++)
+	{
+		for (unsigned short j = 0; j < 32; j++)
+		{
+			task_code.r = i;
+			task_code.w = j << 2;
+			task_code.r |= task_code.w;
+			task_code.w = text[i][j];
+			task_code.w <<= 7;
+			task_code.r |= task_code.w;
+			task_code.b = 0;	task_code.t = 1;
+			for (unsigned short k = 0; k < 15; k++)
+			{
+				if (task_code.r & task_code.t)
+				{
+					task_code.b = ~task_code.b;
+				}
+				task_code.t <<= 1;
+			}
+			task_code.w = 1 << 15;
+			if (task_code.b == 1)
+			{
+				task_code.r |= task_code.w;
+			}
+			result[i][j] = task_code.r;
+		}
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			std::bitset<16> res(result[i][j]);
+			cout << res << endl;
+		}
+	}
+	//
+	for (unsigned short i = 0; i < 4; i++)
+	{
+		for (unsigned short j = 0; j < 32; j++)
+		{
+			task_code.r = result[i][j];
+			indj = task_code.r & 0x007c;
+			indj >>= 2; // 0000 0000 0111 1100 = 0x007с
+			indi = task_code.r & 0x0003; // 0000 0000 0000 0011 = 0x0003
+			task_code.w = task_code.r & 0x7f80; // 0111 1111 1000 0000 = 0x7f80
+			task_code.w >>= 7;
+			ch = task_code.w;
+			result_char[indi][indj] = ch;
+		}		
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			cout << result_char[i][j];
+		}
+		cout << endl;
+	}
 }
 
 //Завдання 4
 /*
-Вхідний рядок байтів має довжину, кратну 8, написати програму що кодує його за наступною схемою: 
+Вхідний рядок байтів має довжину 8 байтів, написати програму що кодує його за наступною схемою: 
 вісім біт першого байта записуються, як нулеві біти перших восьми байтів, 
 вісім біт другого – перші біти других восьми байтів і т.д. для кожних восьми байтів вхідної послідовності.
 */
 void task4()
 {
+	system("cls");
+	char text[MAXSIZE];
+	unsigned short result[MAXSIZE];
+	unsigned short prom[MAXSIZE];
+	unsigned short r, w;
+	printf("Enter your text:\n");
+	cin >> text;
+	int n = strlen(text);
+	int N = n + (8 - n % 8);
+	if (n % 8 != 0)
+	{
+		while (n < N - 1)
+		{
+			strcat_s(text, " ");
+			n++;
+		}
+		text[N - 1] = '\0';
+	}	
+	for (int i = 0; i < N; i++)
+	{
+		r = text[i];
+		prom[i] = r;
+		std::bitset<16> res(prom[i]);
+		cout << res << endl;
+	}
+	cout << endl << "Results:" << endl;
 
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			r = text[i];
+			w = (r >> j) & 0x0001;
+			w <<= (i % 8);
+			result[i - i % 8 + j] |= w;
+		}
+	}
+	for (int i = 0; i < N; i++)
+	{
+		std::bitset<16> res(result[i]);
+		cout << res << endl;
+	}
 }
 
 int main()
