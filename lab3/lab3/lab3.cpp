@@ -426,14 +426,6 @@ Vector Vector::Multiply(short b)
 		tmp.v[i] = v[i] * b;
 	}
 	return tmp;
-	/*if (number != 0)
-	{
-		for (int i = 0; i < number; i++)
-		{
-			v[i] *= b;
-		}
-	}
-	*/
 }
 Vector Vector::More(Vector& b) {
 	int tnum;
