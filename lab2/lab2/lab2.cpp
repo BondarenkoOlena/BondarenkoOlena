@@ -48,7 +48,10 @@ void task1()
 	scanf_s("%d", &d);
 
 	result = (((a << 4) - a + (b << 8) + (b << 6) - (b << 3)) >> 6) - (c << 7) + (c << 3) + (d << 7) - (d << 3) + d;
+	int res = (a * 15 + 312 * b) / 64 - 120 * c + 121 * d;
 	printf("Result: %d", result);
+	printf("Result: %d", res);
+	
 }
 
 //Завдання 2: Шифрування інформації.
@@ -177,6 +180,15 @@ void task2_2()
 		}
 	}
 	NewFile.close();
+	ofstream File("newfile.txt");
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 32; j++)
+		{
+			File << result[i][j] << "   ";
+		}
+	}
+	File.close();
 }
 
 //Завдання 3
@@ -186,14 +198,15 @@ void task3()
 	system("cls");
 	struct Code_Uncode
 	{
-		unsigned short r: 16;
-		unsigned short w: 16;
-		unsigned short b: 8;
-		unsigned short t: 8;
+		unsigned short line_number : 2;
+		unsigned short position : 5;
+		unsigned short code : 8;
+		unsigned short parity_bit : 1;
 	};
 	Code_Uncode task_code;
 	char text[4][32];
 	unsigned short result[4][32];
+	unsigned short r, w, b, t;
 	short indi, indj;
 	char result_char[4][32];
 	char ch;
@@ -215,27 +228,32 @@ void task3()
 	{
 		for (unsigned short j = 0; j < 32; j++)
 		{
-			task_code.r = i;
-			task_code.w = j << 2;
-			task_code.r |= task_code.w;
-			task_code.w = text[i][j];
-			task_code.w <<= 7;
-			task_code.r |= task_code.w;
-			task_code.b = 0;	task_code.t = 1;
+			r = i;
+			task_code.line_number = i;
+			w = j << 2;
+			r |= w;
+			task_code.position = j;
+			w = text[i][j];
+			w <<= 7;
+			r |= w;
+			task_code.code = text[i][j];
+			b = 0;	t = 1;
+			task_code.parity_bit = 0;
 			for (unsigned short k = 0; k < 15; k++)
 			{
-				if (task_code.r & task_code.t)
+				if (r & t)
 				{
-					task_code.b = ~task_code.b;
+					b = ~b;
 				}
-				task_code.t <<= 1;
+				t <<= 1;
 			}
-			task_code.w = 1 << 15;
-			if (task_code.b == 1)
+			w = 1 << 15;
+			if (b == 1)
 			{
-				task_code.r |= task_code.w;
+				r |= w;
+				task_code.parity_bit = 1;
 			}
-			result[i][j] = task_code.r;
+			result[i][j] = r;
 		}
 	}
 
@@ -252,13 +270,13 @@ void task3()
 	{
 		for (unsigned short j = 0; j < 32; j++)
 		{
-			task_code.r = result[i][j];
-			indj = task_code.r & 0x007c;
+			r = result[i][j];
+			indj = r & 0x007c;
 			indj >>= 2; // 0000 0000 0111 1100 = 0x007с
-			indi = task_code.r & 0x0003; // 0000 0000 0000 0011 = 0x0003
-			task_code.w = task_code.r & 0x7f80; // 0111 1111 1000 0000 = 0x7f80
-			task_code.w >>= 7;
-			ch = task_code.w;
+			indi = r & 0x0003; // 0000 0000 0000 0011 = 0x0003
+			w = r & 0x7f80; // 0111 1111 1000 0000 = 0x7f80
+			w >>= 7;
+			ch = w;
 			result_char[indi][indj] = ch;
 		}		
 	}
@@ -283,7 +301,7 @@ void task4()
 {
 	system("cls");
 	char text[MAXSIZE];
-	unsigned short result[MAXSIZE];
+	unsigned short result[MAXSIZE] = {0};
 	unsigned short prom[MAXSIZE];
 	unsigned short r, w;
 	printf("Enter your text:\n");
@@ -315,7 +333,7 @@ void task4()
 			r = text[i];
 			w = (r >> j) & 0x0001;
 			w <<= (i % 8);
-			result[i - i % 8 + j] |= w;
+			result[(i / 8) * 8 + j] |= w;
 		}
 	}
 	for (int i = 0; i < N; i++)
