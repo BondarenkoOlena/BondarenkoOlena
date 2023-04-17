@@ -262,7 +262,6 @@ Vector::Vector(int n)
 	{
 		v[i] = 0;
 	}
-
 }
 Vector::Vector(int n, Int& b)
 {
@@ -565,24 +564,432 @@ void task2()
 }
 
 /*
-	ifstream MyFile("doublefile.txt");
-	if (!MyFile.is_open()) return;
-	if (MyFile.fail()) return;
-	MyFile >> N;
-	double d;
-	for (int i = 0; i < N; i++)
-	{
-		MyFile >> d;
-		pX[i] = d;
-		printf("X[%d]: %0.3lf\n", i, pX[i]);
-	}
-	task3(N, pX);
-	MyFile.close();
+Задача 3.Створити клас матриця. Даний клас містить вказівник на int, розміри рядків і стовпців та стан помилки. У класі визначити:
+•	конструктор без параметрів( виділяє місце для матриці 3 на 3 елемента та інінціалізує його в нуль);
+•	конструктор з одним параметром – розмір n матриці (виділяє місце n на n та інінціалізує матрицю значенням нуль);
+•	конструктор із трьома розміри матриці (n , m) та значення ініціалізації value (виділяє місце перші аргументи та інінціалізує значенням третього аргументу - value);
+•	конструктор копій та операцію присвоєння; // !!!
+•	деструктор звільняє пам'ять.
+•	визначити функцію, яка присвоює елементу масиву деяке значення (параметр за замовчуванням);
+•	функцію яка одержує деякий елемент матриці за індексами i та j;
+•	визначити функції друку, додавання, множення, віднімання, які здійснюють ці арифметичні операції з даними цього класу;
+•	визначити функції порівняння: більше, менше або рівно, які повертають true або false.
+
+У змінну стани встановлювати код помилки, коли не вистачає пам'яті, виходить за межі
+матриці. Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму
+тестування всіх можливостей цього класу.
 */
+class Matrix
+{
+	//вказівник на int, розміри рядків і стовпців та стан помилки
+	int* ma;
+	int rows, colls;
+	int state;
+	int num = rows * colls; //rows * colls
+
+public:
+	//конструктор без параметрів( виділяє місце для матриці 3 на 3 елемента та інінціалізує його в нуль);
+	Matrix() : ma(NULL), rows(3), colls(3), state(0), num(9) {}
+	//конструктор з одним параметром – розмір n матриці (виділяє місце n на n та інінціалізує матрицю значенням нуль);
+	Matrix(int n);
+	//конструктор із трьома розміри матриці (n , m) та значення ініціалізації value (виділяє місце перші аргументи та інінціалізує значенням третього аргументу - value);
+	Matrix(int n, int m, int& value);
+	Matrix(int n, int m, int* value);
+	//конструктор копій та операцію присвоєння;
+	Matrix(const Matrix& s);
+	Matrix& operator=(const Matrix& s);
+	//деструктор звільняє пам'ять.
+	~Matrix()
+	{
+		//cout << "del matrix" << endl;
+		if (ma) delete[] ma;
+	}
+
+	//визначити функцію, яка присвоює елементу масиву деяке значення (параметр за замовчуванням);
+	void Element();
+	//функцію яка одержує деякий елемент матриці за індексами i та j;
+	void Index(int i, int j);
+	//визначити функції друку, додавання, множення, віднімання, які здійснюють ці арифметичні операції з даними цього класу;
+	void Output();
+	void Input();
+
+	//визначити функцію додавання
+	Matrix Add(Matrix& b);
+	//визначити функцію віднімання
+	Matrix Subtract(Matrix& b);
+	//визначити функцію множення на ціле типу short
+	Matrix Multiply(Matrix& b);
+	//визначити функції порівняння: більше, менше або рівно, які повертають true або false
+	Matrix More(Matrix& b);
+	Matrix Less(Matrix& b);
+	Matrix Equal(Matrix& b);
+};
+Matrix::Matrix(int n)
+{
+	if (n <= 0)
+	{
+		ma = NULL;
+		num = 0;
+		rows = 0;
+		colls = 0;
+		state = -1;
+		cout << " Mat --> 0 \n";
+	}
+	num = n * n;
+	rows = n;
+	colls = n;
+	ma = new int[n * n];
+	for (int i = 0; i < num; i++)
+	{
+		ma[i] = 0;
+	}
+}
+Matrix::Matrix(int n, int m, int& value)
+{
+	if (n <= 0 || m <= 0)
+	{
+		ma = NULL;
+		num = 0;
+		rows = 0;
+		colls = 0;
+		state = -1;
+		cout << " Mat --> 0 ";
+	}
+	num = n * m;
+	rows = n;
+	colls = m;
+	ma = new int[num];
+	for (int i = 0; i < num; i++)
+	{
+		ma[i] = value;
+	}
+}
+Matrix::Matrix(int n, int m, int* value)
+{
+	if (n <= 0 || ma == NULL || m <= 0)
+	{
+		m = NULL;
+		num = 0;
+		rows = 0;
+		colls = 0;
+		state = -1;
+		cout << " Mat --> 0 ";
+	}
+	num = n * m;
+	rows = n;
+	colls = m;
+	ma = new int[num];
+	for (int i = 0; i < num; i++)
+	{
+		ma[i] = value[i];
+	}
+}
+Matrix::Matrix(const Matrix& s)
+{
+	num = s.num;
+	rows = s.rows;
+	colls = s.colls;
+	ma = new int[num];
+	state = 0;
+	for (int i = 0; i < num; i++)
+	{
+		ma[i] = s.ma[i];
+	}
+}
+Matrix& Matrix::operator=(const Matrix& s)
+{
+	if (rows != s.rows || colls != s.colls || num != s.num)
+	{
+		if (ma) delete[] ma;
+		num = s.num;
+		rows = s.rows;
+		colls = s.colls;
+		ma = new int[num];
+		state = 0;
+	}
+	for (int i = 0; i < num; i++)
+	{
+		ma[i] = s.ma[i];
+	}
+	return *this;
+}
+void Matrix::Element()
+{
+	for (int i = 0; i < num; i++)
+	{
+		ma[i] = 3;
+	}
+}
+void Matrix::Index(int i, int j)
+{
+	if (i < rows || j < colls)
+	{
+		cout << " ma[" << i << "] [" << j << "] :" << ma[i * colls + j] << endl;
+	}
+	else
+	{
+		cout << "error INDEX set\n";
+	}
+}
+void Matrix::Input()
+{
+	if (ma == NULL || rows <= 0 || colls <= 0)
+	{
+		if (ma) delete[] ma;
+		do
+		{
+			cout << "Input rows: ";
+			cin >> rows;
+		} while (rows <= 0);
+		do
+		{
+			cout << "Input colls: ";
+			cin >> colls;
+		} while (colls <= 0);
+		num = rows * colls;
+		ma = new int[num];
+	}
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < colls; j++)
+		{
+			cout << " ma[" << i << "] [" << j << "] : ";
+			cin >> ma[i * colls + j];
+		}
+	}
+}
+void Matrix::Output()
+{
+	if (rows >= 0 && colls >= 0 && ma != NULL)
+	{
+		for (int i = 0; i < rows; i++)
+		{
+			for (int j = 0; j < colls; j++)
+			{
+				cout << " ma[" << i << "] [" << j << "] " << ma[i * colls + j] << '\t';
+				cout << endl;
+			}
+		}
+	}
+}
+Matrix Matrix::Add(Matrix& b) 
+{
+	if (rows != b.rows || colls != b.colls)
+	{
+		Matrix tmp;
+		tmp.state = -1;
+		cout << " Matrix must have the same size!";
+		return tmp;
+	}
+	Matrix tmp(rows, colls, 0);
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < colls; j++)
+		{
+			tmp.ma[i * colls + j] = ma[i * colls + j] + b.ma[i * colls + j];
+		}
+	}
+	return tmp;
+}
+Matrix Matrix::Subtract(Matrix& b) {
+	int tnum, ti, tj;
+	if (rows != b.rows)
+	{
+		return Matrix(0);
+	}
+	if (colls == b.colls)
+	{
+		return Matrix(0);
+	}
+	ti = rows;
+	tj = colls;
+	tnum = ti * tj;
+	if (tnum >= 0 && ti >= 0 && tj >= 0) {
+		Matrix tmp(ti, tj, 0);
+		for (int i = 0; i < tnum; i++)
+		{
+			tmp.ma[i] = ma[i] - b.ma[i];
+		}
+		return tmp;
+	}
+	return Matrix(0);
+}
+Matrix Matrix::Multiply(Matrix& b)
+{
+	int tnum, ti, tj;
+	if (rows != b.rows)
+	{
+		return Matrix(0);
+	}
+	if (colls == b.colls)
+	{
+		return Matrix(0);
+	}
+	ti = rows;
+	tj = colls;
+	tnum = ti * tj;
+	if (tnum >= 0 && ti >= 0 && tj >= 0) {
+		Matrix tmp(ti, tj, 0);
+		for (int i = 0; i < tnum; i++)
+		{
+			tmp.ma[i] = ma[i] * b.ma[i];
+		}
+		return tmp;
+	}
+	return Matrix(0);
+}
+Matrix Matrix::More(Matrix& b) {
+	int tnum, ti, tj; 
+	if (rows != b.rows)
+	{
+		return Matrix(0);
+	}
+	if (colls == b.colls)
+	{
+		return Matrix(0);
+	}
+	ti = rows;
+	tj = colls;
+	tnum = ti * tj;
+	if (tnum >= 0 && ti >= 0 && tj >= 0)
+	{
+		Matrix tmp(ti, tj, 0);
+		for (int i = 0; i < tnum; i++)
+		{
+			if (ma[i] > b.ma[i])
+			{
+				tmp.ma[i] = true;
+				cout << ma[i] << " > " << b.ma[i] << " : true" << endl;
+			}
+			else
+			{
+				tmp.ma[i] = false;
+				cout << ma[i] << " > " << b.ma[i] << " : false" << endl;
+			}
+		}
+		return tmp;
+	}
+	return Matrix(0);
+}
+Matrix Matrix::Less(Matrix& b) {
+	int tnum, ti, tj;
+	if (rows != b.rows)
+	{
+		return Matrix(0);
+	}
+	if (colls == b.colls)
+	{
+		return Matrix(0);
+	}
+	ti = rows;
+	tj = colls;
+	tnum = ti * tj;
+	if (tnum >= 0 && ti >= 0 && tj >= 0)
+	{
+		Matrix tmp(ti, tj, 0);
+		for (int i = 0; i < tnum; i++)
+		{
+			if (ma[i] < b.ma[i])
+			{
+				tmp.ma[i] = true;
+				cout << ma[i] << " < " << b.ma[i] << " : true" << endl;
+			}
+			else
+			{
+				tmp.ma[i] = false;
+				cout << ma[i] << " < " << b.ma[i] << " : false" << endl;
+			}
+		}
+		return tmp;
+	}
+	return Matrix(0);
+}
+Matrix Matrix::Equal(Matrix& b) {
+	int tnum, ti, tj;
+	if (rows != b.rows)
+	{
+		return Matrix(0);
+	}
+	if (colls == b.colls)
+	{
+		return Matrix(0);
+	}
+	ti = rows;
+	tj = colls;
+	tnum = ti * tj;
+	if (tnum >= 0 && ti >= 0 && tj >= 0)
+	{
+		Matrix tmp(ti, tj, 0);
+		for (int i = 0; i < tnum; i++)
+		{
+			if (ma[i] = b.ma[i])
+			{
+				tmp.ma[i] = true;
+				cout << ma[i] << " = " << b.ma[i] << " : true" << endl;
+			}
+			else
+			{
+				tmp.ma[i] = false;
+				cout << ma[i] << " = " << b.ma[i] << " : false" << endl;
+			}
+		}
+		return tmp;
+	}
+	return Matrix(0);
+}
 void task3()
 {
+	cout << "    Test " << endl;
+	Matrix Obj, Obj1(3);
+	cout << "Obj" << endl;
+	Obj.Output();
+	cout << "Obj1:" << endl;
+	Obj1.Output();
+	cout << "Input value ";
+	int a;
+	cin >> a;
+	cout << " value : " << a << endl;
+	Matrix Obj2(2, 3, a);
+	cout << "Obj2:" << endl;
+	Obj2.Output();
 
+	cout << endl;
+	Obj.Input();
+	cout << "Obj:" << endl;
+	Obj.Output();
+	//функцію яка одержує деякий елемент масиву;
+	cout << "Index i : ";
+	int i;
+	cin >> i;
+	cout << "Index j : ";
+	int j;
+	cin >> j;
+	Obj.Index(i, j);
+	//визначити функцію, яка присвоює елементу масиву деяке значення (параметр за замовчуванням);
+	cout << "Obj2:" << endl;
+	Obj2.Element();
+	Obj2.Output();
+	//визначити функцію додавання
+	cout << "Add:\n";
+	Obj1 = Obj.Add(Obj2);
+	Obj1.Output();
+	//визначити функцію віднімання
+	cout << "Subtract:\n";
+	Obj1 = Obj.Subtract(Obj2);
+	Obj1.Output();
+	//визначити функцію множення на ціле типу short
+	cout << "Multiply:\n";
+	Obj1 = Obj.Multiply(Obj2);
+	Obj1.Output();
+	//визначити функції порівняння: більше, менше або рівно, які повертають true або false
+	cout << "More:\n";
+	Obj1 = Obj.More(Obj2);
+	cout << "Less:\n";
+	Obj1 = Obj.Less(Obj2);
+	cout << "Equal:\n";
+	Obj1 = Obj.Equal(Obj2);
 }
+
 int main()
 {
 TASK:	int task_number = task_manager();
