@@ -115,7 +115,14 @@ public:
 	friend VectorInt& operator++(VectorInt& s);
 	friend VectorInt& operator--(VectorInt& s);
 	//унарної логічної ! (заперечення): повертає значення true, якщо елементи якщо size не дорівнює – нулю, інакше false;
-	VectorInt operator!();
+	bool operator!()
+	{
+		if (size != 0)
+		{
+			return true;
+		}
+		return false;
+	}
 	//унарної побітової ~(заперечення) : повертає побітове заперечення для всіх елементів масиву класу вектор;
 	VectorInt operator~();
 	//унарний арифметичний - (мінус) : повертає всі елементи масиву класу вектор з протилежним знаком;
@@ -130,11 +137,11 @@ public:
 	// -= -відніманням векторів;
 	VectorInt& operator-=(const VectorInt& b);
 	// *= -множення, вектора на число типу int;
-	VectorInt& operator*=(const VectorInt& b);
+	VectorInt& operator*=(int b);
 	// /= -ділення, вектора на число типу int;
-	VectorInt& operator/=(const VectorInt& b);
+	VectorInt& operator/=(int b);
 	// %= -остача від ділення, вектора на число типу int;
-	VectorInt& operator%=(const VectorInt& b);
+	VectorInt& operator%=(int b);
 	// |= -побітове додаванням векторів;
 	VectorInt& operator|=(const VectorInt& b);
 	// ^= -побітове додавання за модулем 2 векторів;
@@ -169,14 +176,43 @@ public:
 	friend ostream& operator<<(ostream& os, VectorInt& a);
 
 	//рівності == та нерівності!= , функція-операція виконує певні дії над кожною парою елементів векторів за індексом
-
+	bool operator==(VectorInt b)
+	{
+		if (size == b.size)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (vector[i] != b.vector[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	bool operator!=(VectorInt b)
+	{
+		if (size == b.size)
+		{
+			for (int i = 0; i < size; i++)
+			{
+				if (vector[i] == b.vector[i])
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		return true;
+	}
 	//операцію індексації [] – функцію, яка звертається до елементу масиву за індексом, якщо індекс невірний функція вказує на останній елемент масиву та встановлює код помилки у змінну codeError
 	Int& operator[](const int index);
 	//розподілу пам’яті new та delete;
-	/*void* operator new(size_t tip, int n);
-	void operator delete[](void* p);*/
 	void* operator new(size_t tip);
-	void operator delete[](void* p);
 	//виклику функції();
 	VectorInt& operator()(const int index);
 
@@ -184,22 +220,82 @@ public:
 	// > (більше)для двох векторів;
 	bool operator>(VectorInt b)
 	{
-		return (vector > b.vector) ? true : false;
+		if (size == b.size)
+		{
+			int v_tracker = 0;
+			int b_tracker = 0;
+			for (int i = 0; i < size; i++)
+			{
+				v_tracker += vector[i];
+				b_tracker += b.vector[i];
+			}
+			if (v_tracker > b_tracker)
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
 	}
 	// >= (більше рівне) для двох векторів;
 	bool operator>=(VectorInt b)
 	{
-		return (vector >= b.vector) ? true : false;
+		if (size == b.size)
+		{
+			int v_tracker = 0;
+			int b_tracker = 0;
+			for (int i = 0; i < size; i++)
+			{
+				v_tracker += vector[i];
+				b_tracker += b.vector[i];
+			}
+			if (v_tracker >= b_tracker)
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
 	}
 	// < (менше)для двох векторів;
 	bool operator<(VectorInt b)
 	{
-		return (vector < b.vector) ? true : false;
+		if (size == b.size)
+		{
+			int v_tracker = 0;
+			int b_tracker = 0;
+			for (int i = 0; i < size; i++)
+			{
+				v_tracker += vector[i];
+				b_tracker += b.vector[i];
+			}
+			if (v_tracker < b_tracker)
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
 	}
 	// <= (менше рівне) для двох векторів.
 	bool operator<=(VectorInt b)
 	{
-		return (vector <= b.vector) ? true : false;
+		if (size == b.size)
+		{
+			int v_tracker = 0;
+			int b_tracker = 0;
+			for (int i = 0; i < size; i++)
+			{
+				v_tracker += vector[i];
+				b_tracker += b.vector[i];
+			}
+			if (v_tracker <= b_tracker)
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
 	}
 };
 VectorInt::VectorInt(int n)
@@ -263,11 +359,17 @@ VectorInt::VectorInt(const VectorInt& s)
 
 VectorInt::VectorInt(VectorInt& src)
 {
-	for (int i = 0; i < 3; i++) vector[i] = src.vector[i];
+	size = src.size;
+	vector = new Int[size];
+	codeError = 0;
+	for (int i = 0; i < size; i++) vector[i] = src.vector[i];
 }
 VectorInt::VectorInt(VectorInt&& src)
 {
-	for (int i = 0; i < 3; i++) vector[i] = src.vector[i];
+	size = src.size;
+	vector = new Int[size];
+	codeError = 0;
+	for (int i = 0; i < size; i++) vector[i] = src.vector[i];
 }
 VectorInt& operator++(VectorInt& s)
 {
@@ -285,23 +387,27 @@ VectorInt& operator--(VectorInt& s)
 	}
 	return s;
 }
-VectorInt VectorInt::operator!()
+/*VectorInt VectorInt::operator!()
 {
 	return size != 0;
-}
+}*/
 VectorInt VectorInt::operator~()
 {
+	VectorInt tempObj;
 	for (int i = 0; i < size; i++)
 	{
-		vector[i] = ~vector[i];
+		tempObj.vector[i] = ~vector[i];
 	}
+	return tempObj;
 }
 VectorInt VectorInt::operator-()
 {
+	VectorInt tempObj(size);
 	for (int i = 0; i < size; i++)
 	{
-		vector[i] = -vector[i];
+		tempObj.vector[i] = -vector[i];
 	}
+	return tempObj;
 }
 VectorInt& VectorInt::operator=(VectorInt& s)
 {
@@ -330,27 +436,27 @@ VectorInt& VectorInt::operator-=(const VectorInt& b)
 	}
 	return *this;
 }
-VectorInt& VectorInt::operator*=(const VectorInt& b)
+VectorInt& VectorInt::operator*=(int b)
 {
 	for (int i = 0; i < size; i++)
 	{
-		vector[i] = vector[i] * b.vector[i];
+		vector[i] = vector[i] * b;
 	}
 	return *this;
 }
-VectorInt& VectorInt::operator/=(const VectorInt& b)
+VectorInt& VectorInt::operator/=(int b)
 {
 	for (int i = 0; i < size; i++)
 	{
-		vector[i] = vector[i] / b.vector[i];
+		vector[i] = vector[i] / b;
 	}
 	return *this;
 }
-VectorInt& VectorInt::operator%=(const VectorInt& b)
+VectorInt& VectorInt::operator%=(int b)
 {
 	for (int i = 0; i < size; i++)
 	{
-		vector[i] = vector[i] % b.vector[i];
+		vector[i] = vector[i] % b;
 	}
 	return *this;
 }
@@ -381,11 +487,11 @@ VectorInt& VectorInt::operator&=(const VectorInt& b)
 
 VectorInt VectorInt::operator+(VectorInt& b)
 {
-	VectorInt temp;
 	if (size > b.size)
 	{
 		size = b.size;
 	}
+	VectorInt temp(size);
 	for (int i = 0; i < size; i++)
 	{
 		temp.vector[i] = vector[i] + b.vector[i];
@@ -475,13 +581,19 @@ VectorInt VectorInt::operator&(VectorInt& b)
 istream& operator>>(istream& is, VectorInt& a)
 {
 	int i;
-	for (i = 0; i < 3; i++) is >> a.vector[i];
+	for (i = 0; i < a.size; i++)
+	{
+		is >> a.vector[i];
+	}
 	return is;
 }
 ostream& operator<<(ostream& os, VectorInt& a)
 {
 	int i;
-	for (i = 0; i < 3; i++) os << " " << a.vector[i] << " ";
+	for (i = 0; i < a.size; i++)
+	{
+		os << " " << a.vector[i] << " ";
+	}
 	return os;
 }
 
@@ -495,31 +607,58 @@ Int& VectorInt::operator[](const int index)
 	}
 	return vector[index];
 }
-/*void* operator new(size_t tip, int n)
-{
-	void* p = new char[tip * n];
-	return p;
-}
-void operator delete[](void* p)
-{
-	delete p;
-}*/
 void* operator new(size_t tip)
 {
 	return (malloc(tip));
 }
-void operator delete[](void* p)
-{
-	free(p);
-}
 VectorInt& VectorInt::operator()(const int index)
 {
-
+	VectorInt tempObj;
+	return tempObj;
 }
 
 void task1()
 {
+	VectorInt vec1, vec2(3);
+	cout << " Vec1: " << vec1 << endl;
+	cout << " Vec2: " << vec2 << endl;
+	cout << " Enter size of vec3: ";
+	int size3;
+	cin >> size3;
+	cout << " Enter value of vec3: ";
+	int value;
+	cin >> value;
+	VectorInt vec3(size3, value);
+	cout << " Vec3: " << vec3 << endl;
 
+	vec2 += vec3;
+	cout << " Vec2 += vec3: " << vec2 << endl;
+	vec2 -= vec3;
+	cout << " Vec2 -= vec3: " << vec2 << endl;
+	vec3 *= 4;
+	cout << " Vec3 *= 2: " << vec3 << endl;
+	vec3 /= 3;
+	cout << " Vec3 /= 3: " << vec3 << endl;
+	vec3 %= 3;
+	cout << " Vec3 %= 3: " << vec3 << endl;
+
+	//осб тут)
+	if (vec2 == vec3)
+	{
+		cout << " vec2 == vec3" << endl;
+	}
+	if (vec2 != vec3)
+	{
+		cout << " vec2 != vec3" << endl;
+	}
+	if (vec2 > vec3)
+	{
+		cout << " vec2 > vec3" << endl;
+	}
+	if (vec2 < vec3)
+	{
+		cout << " vec2 < vec3" << endl;
+	}
 }
 
 /*
@@ -651,6 +790,7 @@ AssArray::AssArray()
 	numbers[98] = "ninety eight";
 	numbers[99] = "ninety nine";
 	numbers[100] = "hundred";
+	numbers[101] = "error";
 }
 string& AssArray::operator[](int index)
 {
@@ -658,9 +798,8 @@ string& AssArray::operator[](int index)
 	{
 		CodeError = -1;
 		cout << " error INDEX set ";
-		return;
+		return numbers[101];
 	}
-	cout << index << " та " << numbers[index];
 	return numbers[index];
 }
 int& AssArray::operator()(string index)
@@ -673,7 +812,6 @@ int& AssArray::operator()(string index)
 		}
 	}
 	cout << " error INDEX set ";
-	return;
 }
 istream& operator>>(istream& is, AssArray& a)
 {
@@ -689,7 +827,17 @@ ostream& operator<<(ostream& os, AssArray& a)
 }
 void task2()
 {
-
+	AssArray ass;
+	cout << 45 << " and " << ass[45] << " \n";
+	cout << ass("one") << " and " << "one" << " \n";
+	cout << " Enter index: ";
+	int index;
+	cin >> index;
+	cout << index << " and " << ass[index] << " \n";
+	cout << " Enter index( by letters ): ";
+	string sindex;
+	cin >> sindex;
+	cout << ass(sindex) << " and " << sindex;
 }
 
 void task3()
