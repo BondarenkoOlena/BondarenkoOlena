@@ -10,13 +10,13 @@ using namespace std;
 int task_manager()
 {
 	int task_number;
-RENUMBER:	printf("Menu:\n     1.  Task 1\n     2.  Task 2\n     3.  Task 3\n");
+RENUMBER:	printf("Menu:\n     1.  Task 1\n     2.  Task 2\n");
 	printf("Enter task number you wanna do: ");
 	scanf_s("%d", &task_number);
-	if (task_number < 1 || task_number > 3)
+	if (task_number < 1 || task_number > 2)
 	{
 		system("cls");
-		printf("There is only 3 options!\n\n");
+		printf("There is only 2 options!\n\n");
 		goto RENUMBER;
 	}
 	return task_number;
@@ -422,6 +422,10 @@ VectorInt& VectorInt::operator=(VectorInt&& s)
 
 VectorInt& VectorInt::operator+=(const VectorInt& b)
 {
+	if (size > b.size)
+	{
+		size = b.size;
+	}
 	for (int i = 0; i < size; i++)
 	{
 		vector[i] = vector[i] + b.vector[i];
@@ -430,6 +434,10 @@ VectorInt& VectorInt::operator+=(const VectorInt& b)
 }
 VectorInt& VectorInt::operator-=(const VectorInt& b)
 {
+	if (size > b.size)
+	{
+		size = b.size;
+	}
 	for (int i = 0; i < size; i++)
 	{
 		vector[i] = vector[i] - b.vector[i];
@@ -462,6 +470,10 @@ VectorInt& VectorInt::operator%=(int b)
 }
 VectorInt& VectorInt::operator|=(const VectorInt& b)
 {
+	if (size > b.size)
+	{
+		size = b.size;
+	}
 	for (int i = 0; i < size; i++)
 	{
 		vector[i] = vector[i] | b.vector[i];
@@ -470,6 +482,10 @@ VectorInt& VectorInt::operator|=(const VectorInt& b)
 }
 VectorInt& VectorInt::operator^=(const VectorInt& b)
 {
+	if (size > b.size)
+	{
+		size = b.size;
+	}
 	for (int i = 0; i < size; i++)
 	{
 		vector[i] = vector[i] ^ b.vector[i];
@@ -478,6 +494,10 @@ VectorInt& VectorInt::operator^=(const VectorInt& b)
 }
 VectorInt& VectorInt::operator&=(const VectorInt& b)
 {
+	if (size > b.size)
+	{
+		size = b.size;
+	}
 	for (int i = 0; i < size; i++)
 	{
 		vector[i] = vector[i] & b.vector[i];
@@ -642,6 +662,8 @@ void task1()
 	vec3 %= 3;
 	cout << " Vec3 %= 3: " << vec3 << endl;
 
+	cout << " Vec3: " << vec3 << endl;
+	cout << " Vec2: " << vec2 << endl;
 	//осб тут)
 	if (vec2 == vec3)
 	{
@@ -840,11 +862,6 @@ void task2()
 	cout << ass(sindex) << " and " << sindex;
 }
 
-void task3()
-{
-
-}
-
 int main()
 {
 TASK:	int task_number = task_manager();
@@ -855,9 +872,6 @@ TASK:	int task_number = task_manager();
 		break;
 	case 2:
 		task2();
-		break;
-	case 3:
-		task3();
 		break;
 	default:
 		break;
