@@ -519,6 +519,9 @@ void task3()
 	cout << " fObj2: " << fObj2;
 	cout << " fObj3: " << fObj3;
 	cout << " fObj4: " << fObj4;
+
+	fObj0 = fObj4;
+	cout << " fObj0 = fObj4: " << fObj0;
 }
 
 int main()
