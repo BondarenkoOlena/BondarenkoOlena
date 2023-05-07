@@ -338,14 +338,16 @@ void task2()
 	string c;
 	cin >> c;
 
-	City CityObj1(rs), CityObj2(rs, ks), CityObj3(rs, ks, f), CityObj4(c, rs, ks, f);
-	cout << "CityObj2(rs): ";
+	City CityObj0, CityObj1(rs), CityObj2(rs, ks), CityObj3(rs, ks, f), CityObj4(c, rs, ks, f);
+	cout << "CityObj0: ";
+	CityObj0.Output(); 
+	cout << "CityObj1(rs): ";
 	CityObj1.Output();
-	cout << "CityObj3(rs, ks): ";
+	cout << "CityObj2(rs, ks): ";
 	CityObj2.Output();
-	cout << "CityObj4(rs, ks, f): ";
+	cout << "CityObj3(rs, ks, f): ";
 	CityObj3.Output();
-	cout << "CityObj5(c, rs, ks, f): ";
+	cout << "CityObj4(c, rs, ks, f): ";
 	CityObj4.Output();
 }
 
@@ -357,20 +359,166 @@ class SportGame
 {
 protected:
 	int players_number;
-	int victories_number;
-
-public:
-};
-class Football : public SportGame
-{
 	string team_name;
 
 public:
+	SportGame() : players_number(0), team_name("NoName") {}
+	SportGame(int n) : players_number(n), team_name("NoName") {}
+	SportGame(string nm) : players_number(0), team_name(nm) {}
+	SportGame(int n, string nm) : players_number(n), team_name(nm) {}
 
+	// конструктори копіювання
+	SportGame(const SportGame& a)
+	{
+		players_number = a.players_number;
+		team_name = a.team_name;
+		cout << " Constructor Copy SportGame(const SportGame& a) \n";
+	}
+	//перенесення
+	SportGame(SportGame&& a)
+	{
+		players_number = a.players_number;
+		team_name = a.team_name;
+		a.players_number = 0;
+		a.team_name = "NoName";
+		cout << " Constructor Move SportGame(SportGame&& a) \n";
+	}
+	//оператори присвоювання
+	SportGame& operator=(const SportGame& s)
+	{
+		players_number = s.players_number;
+		team_name = s.team_name;
+		cout << " operator=(const SportGame& s) Copy \n";
+		return *this;
+	}
+	SportGame& operator=(SportGame&& s) 
+	{
+		players_number = s.players_number;
+		team_name = s.team_name;
+		s.players_number = 0;
+		s.team_name = "NoName";
+		cout << " operator=( SportGame&& s) Move \n";
+		return *this;
+	}
+	~SportGame() 
+	{
+		cout << "Destructor SportGame\n";
+	}
+
+	//Перевизначити вивід у потік і введення з потоку
+	friend ostream& operator<<(ostream& os, SportGame& a);
+	friend istream& operator>>(istream& os, SportGame& a);
 };
+ostream& operator<<(ostream& os, SportGame& a) {
+	os << "Players Number: " << a.players_number << endl;
+	os << "Team Name: " << a.team_name << endl;
+	return os;
+}
+istream& operator>>(istream& is, SportGame& a) {
+	is >> a.players_number;
+	is >> a.team_name;
+	return is;
+}
+class Football : public SportGame
+{
+	int victories_number;
+
+public:
+	Football() : victories_number(0) {}
+	Football(int n) : SportGame(n)
+	{
+		victories_number = 0;
+	}
+	Football(string nm) : SportGame(nm)
+	{
+		victories_number = 0;
+	}
+	Football(int n, string nm) : SportGame(n, nm)
+	{
+		victories_number = 0;
+	}
+	Football(int n, string nm, int v) : SportGame(n, nm)
+	{
+		victories_number = v;
+	}
+	~Football()
+	{
+		victories_number = 0;
+		cout << "\tDestructor Football\n";
+	}
+
+	// конструктори копіювання
+	Football(const Football& a)
+	{
+		players_number = a.players_number;
+		team_name = a.team_name;
+		victories_number = a.victories_number;
+		cout << " Constructor Copy Football(const Football& a) \n";
+	}
+	//перенесення
+	Football(Football&& a)
+	{
+		players_number = a.players_number;
+		team_name = a.team_name;
+		victories_number = a.victories_number;
+		a.players_number = 0;
+		a.team_name = "NoName";
+		a.victories_number = 0;
+		cout << " Constructor Move Football(Football&& a) \n";
+	}
+	//оператори присвоювання
+	Football& operator=(const Football& s) {
+		this->SportGame::operator=(s);
+		victories_number = s.victories_number;
+		cout << " Football& operator =(const Football &s) \n";
+		return *this;
+	}
+	Football& operator=(Football&& s) {
+		players_number = s.players_number;
+		team_name = s.team_name;
+		s.players_number = 0;
+		s.team_name = "NoName";
+		victories_number = s.victories_number;
+		s.victories_number = 0;
+		cout << " Football& operator =(Football &&s) \n";
+		return *this;
+	}
+
+	friend ostream& operator<<(ostream& os, Football& a);
+	friend istream& operator>>(istream& os, Football& a);
+};
+ostream& operator<<(ostream& os, Football& a) 
+{
+	os << "Players Number: " << a.players_number << endl;
+	os << "Team Name: " << a.team_name << endl;
+	os << "Victories Number: " << a.victories_number << endl;
+	return os;
+}
+istream& operator>>(istream& is, Football& a) 
+{
+	is >> a.players_number;
+	is >> a.team_name;
+	is >> a.victories_number;
+	return is;
+}
 void task3()
 {
+	cout << "Enter players number: ";
+	int n;
+	cin >> n;
+	cout << "Enter team name: ";
+	string nm;
+	cin >> nm;
+	cout << "Enter victories number: ";
+	int v;
+	cin >> v;
+	Football fObj0, fObj1(n), fObj2(nm), fObj3(n, nm), fObj4(n, nm, v);
 
+	cout << " fObj0: " << fObj0;
+	cout << " fObj1: " << fObj1;
+	cout << " fObj2: " << fObj2;
+	cout << " fObj3: " << fObj3;
+	cout << " fObj4: " << fObj4;
 }
 
 int main()
