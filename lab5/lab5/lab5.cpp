@@ -27,7 +27,8 @@ RENUMBER:	printf("Menu:\n     1.  Task 1\n     2.  Task 2\n     3.  Task 3\n");
 /*
 Задача 1.
 Створити клас студент, що має поля: ПІБ(прізвище, ім'я, по-батькові) курс і ідентифікаційний номер.Визначити конструктори, деструктор і функцію друку. 
-Створити похідний клас–студент-дипломник,що має тему диплома.Визначити конструктори за замовчуванням і з різним числом параметрів,деструктори,функцію друку.
+Створити похідний клас–студент-дипломник,що має тему диплома.
+Визначити конструктори за замовчуванням і з різним числом параметрів,деструктори,функцію друку.
 Визначити функції перепризначення назви диплома та ідентифікаційного номера. 
 Написати програму тестування всіх можливостей цього класу.*/
 struct PIB
@@ -157,6 +158,24 @@ public:
 	//функцію друку
 	friend ostream& operator<<(ostream& os, Student& a);
 	friend istream& operator>>(istream& os, Student& a);
+
+	void Output()
+	{
+		cout << name << endl;
+		cout << course << endl;
+		cout << ID << endl;
+	}
+	void setID(long long i)
+	{
+		if (i > 0)
+		{
+			ID = i;
+		}
+		else
+		{
+			ID = 0;
+		}
+	}
 };
 ostream& operator<<(ostream& os, Student& a) {
 	os << a.name;
@@ -201,6 +220,18 @@ public:
 	//функцію друку
 	friend ostream& operator<<(ostream& os, Diploma& a);
 	friend istream& operator>>(istream& os, Diploma& a);
+
+	void Output()
+	{
+		cout << name;
+		cout << course << endl;
+		cout << ID << endl;
+		cout << topic << endl;
+	}
+	void setTopic(string top)
+	{
+		topic = top;
+	}
 };
 ostream& operator<<(ostream& os, Diploma& a) {
 	os << a.name;
@@ -223,9 +254,16 @@ void task1()
 	name.name = "Olena";
 	name.fname = "Bondarenko";
 	Diploma test1, test2(1, 12345678, "Olena", "Sport"), test3(2, 87654321, name, "Food");
-	cout << test1;
-	cout << test2;
-	cout << test3;
+	cout << " Test1: \n";
+	test1.Output();
+	cout << " Test2: \n";
+	test2.Output();
+	cout << " Test3: \n";
+	test3.Output();
+
+	test1.setID(12345678);
+	test1.setTopic("Math");
+	cout << " New test1: \n" << test1;
 }
 
 /*
